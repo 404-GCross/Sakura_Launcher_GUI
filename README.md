@@ -99,6 +99,20 @@ src/:
 pyinstaller --clean --noconfirm main.spec
 ```
 
+Linux 下可一次性构建 AppImage、deb 和 rpm：
+
+```sh
+python -m pip install -r requirements.txt
+python -m pip install pillow
+packaging/linux/build_packages.sh
+```
+
+Linux 构建产物输出到 `dist/linux/`。如果已经生成过 PyInstaller 的 `dist/SakuraLauncher`，可以使用：
+
+```sh
+packaging/linux/build_packages.sh --skip-pyinstaller
+```
+
 ### **注意事项**
 
 - 请确保已安装 Python 3.x 环境（推荐3.12）

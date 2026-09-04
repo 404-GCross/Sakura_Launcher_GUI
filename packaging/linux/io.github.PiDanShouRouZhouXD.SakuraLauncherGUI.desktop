@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Sakura Launcher GUI
+Comment=GUI launcher for Sakura LLM and llama.cpp
+Exec=sakura-launcher-gui
+Icon=sakura-launcher-gui
+Terminal=false
+Categories=Utility;
+StartupWMClass=SakuraLauncher

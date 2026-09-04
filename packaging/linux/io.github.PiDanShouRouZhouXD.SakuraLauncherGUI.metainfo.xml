@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.PiDanShouRouZhouXD.SakuraLauncherGUI</id>
+  <name>Sakura Launcher GUI</name>
+  <summary>GUI launcher for Sakura LLM and llama.cpp</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <launchable type="desktop-id">io.github.PiDanShouRouZhouXD.SakuraLauncherGUI.desktop</launchable>
+  <url type="homepage">https://github.com/PiDanShouRouZhouXD/Sakura_Launcher_GUI</url>
+  <description>
+    <p>Sakura Launcher GUI is a PySide6 desktop launcher for downloading Sakura models and running llama.cpp servers or benchmarks.</p>
+  </description>
+</component>

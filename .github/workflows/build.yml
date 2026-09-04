@@ -10,10 +10,10 @@ on:
   push:
     branches:
       - main
-    paths: [".github/workflows/build.yml", "main.spec", "**/*.py"]
+    paths: [".github/workflows/build.yml", "main.spec", "main_debug.spec", "requirements.txt", "packaging/linux/**", "**/*.py"]
   pull_request:
     types: [opened, synchronize, reopened]
-    paths: ["**/*.py"]
+    paths: [".github/workflows/build.yml", "main.spec", "main_debug.spec", "requirements.txt", "packaging/linux/**", "**/*.py"]
 
 jobs:
   windows-latest:
@@ -85,3 +85,59 @@ jobs:
         with:
           name: macos_dist
           path: dist
+
+  linux-latest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            binutils \
+            curl \
+            fakeroot \
+            file \
+            libegl1 \
+            libgl1 \
+            libxkbcommon-x11-0 \
+            libxcb-cursor0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-shape0 \
+            libxcb-xfixes0 \
+            libxcb-xinerama0 \
+            rpm
+
+      - name: Install Python Environment
+        id: pyenv
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pillow
+
+      - name: Build Linux packages
+        id: linux_package_build
+        run: |
+          packaging/linux/build_packages.sh
+
+      - name: Upload artifacts
+        if: ${{ ( github.event_name == 'push' && github.ref == 'refs/heads/main' ) || github.event.inputs.create_release == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux_dist
+          path: dist/linux

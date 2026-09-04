@@ -3,7 +3,9 @@ from enum import Enum
 import logging
 import os
 import json
+import platform
 import requests
+import sys
 from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtWidgets import (
     QApplication,
@@ -24,6 +26,21 @@ from .common import CURRENT_DIR, get_resource_path, GHPROXY_URL
 from .llamacpp import *
 from .sakura import SAKURA_LIST, Sakura
 from .ui import *
+
+
+def _linux_launcher_arch():
+    machine = platform.machine().lower()
+    if machine in ("x86_64", "amd64"):
+        return "x86_64"
+    if machine in ("aarch64", "arm64"):
+        return "aarch64"
+    return machine
+
+
+def get_launcher_asset_filename(version: str):
+    if sys.platform.startswith("linux"):
+        return f"Sakura_Launcher_GUI_{version}_linux_{_linux_launcher_arch()}.AppImage"
+    return f"Sakura_Launcher_GUI_{version}.exe"
 
 
 def UiDescription(html):
@@ -427,7 +444,7 @@ class DownloadSection(QFrame):
             self.start_download_cudart()
 
     def start_download_launcher(self, version: str):
-        filename = f"Sakura_Launcher_GUI_{version}.exe"
+        filename = get_launcher_asset_filename(version)
         url = f"https://github.com/PiDanShouRouZhouXD/Sakura_Launcher_GUI/releases/download/{version}/{filename}"
         if self.llamacpp_download_src == "GHProxy":
             url = f"https://{GHPROXY_URL}/" + url

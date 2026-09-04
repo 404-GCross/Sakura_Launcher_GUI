@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+if [ -n "${APPDIR:-}" ] && [ -x "$APPDIR/usr/lib/sakura-launcher-gui/SakuraLauncher" ]; then
+    exec "$APPDIR/usr/lib/sakura-launcher-gui/SakuraLauncher" "$@"
+fi
+
+exec /usr/lib/sakura-launcher-gui/SakuraLauncher "$@"
