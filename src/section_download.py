@@ -140,7 +140,9 @@ class DownloadThread(QThread):
             block_size = 1024  # 1 KB
             downloaded_size = 0
 
+            os.makedirs(CURRENT_DIR, exist_ok=True)
             file_path = os.path.join(CURRENT_DIR, self.filename)
+            logging.info(f"写入文件: {file_path}")
             with open(file_path, "wb") as file:
                 for data in response.iter_content(block_size):
                     size = file.write(data)

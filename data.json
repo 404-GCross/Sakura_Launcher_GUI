@@ -5,35 +5,56 @@
             "filename": "llama-b6178-bin-win-cuda-12.4-x64.zip",
             "version": "b6178-CUDA",
             "gpu": "Nvidia独显",
-            "require_cuda": true
+            "require_cuda": true,
+            "platforms": ["windows"]
         },
         {
             "repo": "ggml-org/llama.cpp/releases/download/b6178",
             "filename": "llama-b6178-bin-win-hip-radeon-x64.zip",
             "version": "b6178-HIP",
             "gpu": "大部分AMD独显",
-            "require_cuda": false
+            "require_cuda": false,
+            "platforms": ["windows"]
         },
         {
             "repo": "ggml-org/llama.cpp/releases/download/b6178",
             "filename": "llama-b6178-bin-macos-arm64.zip",
             "version": "b6178-Apple-M",
             "gpu": "苹果电脑M系列核显",
-            "require_cuda": false
+            "require_cuda": false,
+            "platforms": ["macos"]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b6178",
+            "filename": "llama-b6178-bin-ubuntu-x64.zip",
+            "version": "b6178-Linux-CPU",
+            "gpu": "Linux x64 CPU",
+            "require_cuda": false,
+            "platforms": ["linux"]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b6178",
+            "filename": "llama-b6178-bin-ubuntu-vulkan-x64.zip",
+            "version": "b6178-Linux-Vulkan",
+            "gpu": "Linux x64 通用GPU（Vulkan）",
+            "require_cuda": false,
+            "platforms": ["linux"]
         },
         {
             "repo": "PiDanShouRouZhouXD/Sakura_Launcher_GUI/releases/download/v0.0.3-alpha",
             "filename": "llama-b3534-bin-win-rocm-avx512-x64.zip",
             "version": "b3534-ROCm-780m",
             "gpu": "部分AMD核显（不推荐）",
-            "require_cuda": false
+            "require_cuda": false,
+            "platforms": ["windows"]
         },
         {
             "repo": "ggml-org/llama.cpp/releases/download/b6178",
             "filename": "llama-b6178-bin-win-vulkan-x64.zip",
             "version": "b6178-Vulkan",
             "gpu": "通用（不推荐）",
-            "require_cuda": false
+            "require_cuda": false,
+            "platforms": ["windows"]
         }
     ],
     "sakura": [

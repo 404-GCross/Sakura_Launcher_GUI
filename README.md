@@ -113,6 +113,8 @@ Linux 构建产物输出到 `dist/linux/`。如果已经生成过 PyInstaller �
 packaging/linux/build_packages.sh --skip-pyinstaller
 ```
 
+Linux AppImage/deb/rpm 运行时会把下载的模型和 llama.cpp 放到 `~/.local/share/sakura-launcher-gui/`，配置放到 `~/.config/sakura-launcher-gui/`，日志放到 `~/.local/state/sakura-launcher-gui/`。
+
 ### **注意事项**
 
 - 请确保已安装 Python 3.x 环境（推荐3.12）

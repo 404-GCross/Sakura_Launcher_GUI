@@ -1,8 +1,10 @@
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tarfile
 from typing import Dict, List
 import zipfile
 
@@ -11,13 +13,13 @@ from PySide6.QtCore import QObject, Signal
 from .common import GHPROXY_URL
 
 
-
 class Llamacpp:
     repo: str
     filename: str
     version: str
     gpu: str
     require_cuda: bool
+    platforms: List[str]
     download_links: Dict[str, str]
 
     def __init__(
@@ -27,12 +29,14 @@ class Llamacpp:
         version: str,
         gpu: str,
         require_cuda: bool,
+        platforms: List[str] | None = None,
     ):
         self.repo = repo
         self.version = version
         self.gpu = gpu
         self.filename = filename
         self.require_cuda = require_cuda
+        self.platforms = platforms or []
         github_repo = f"https://github.com/{repo}/{filename}"
         self.download_links = {
             "GHProxy": f"https://{GHPROXY_URL}/" + github_repo,
@@ -58,17 +62,48 @@ class LlamacppList(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+    @staticmethod
+    def _current_platform():
+        if sys.platform == "win32":
+            return "windows"
+        if sys.platform == "darwin":
+            return "macos"
+        if sys.platform.startswith("linux"):
+            return "linux"
+        return sys.platform
+
+    def _supports_current_platform(self, obj):
+        platform_key = self._current_platform()
+        platforms = obj.get("platforms")
+        if platforms:
+            return platform_key in platforms
+
+        filename = obj.get("filename", "").lower()
+        if platform_key == "windows":
+            return "win-" in filename or "-win" in filename
+        if platform_key == "macos":
+            return "macos" in filename
+        if platform_key == "linux":
+            return "ubuntu" in filename or "linux" in filename
+        return True
+
     def update_llamacpp_list(self, data_json):
         llamacpp_list = []
         for obj in data_json["llamacpp"]:
+            if not self._supports_current_platform(obj):
+                continue
             llamacpp = Llamacpp(
                 repo=obj["repo"],
                 filename=obj["filename"],
                 version=obj["version"],
                 gpu=obj["gpu"],
                 require_cuda=obj["require_cuda"],
+                platforms=obj.get("platforms"),
             )
             llamacpp_list.append(llamacpp)
+        if not llamacpp_list and self._list:
+            logging.warning("远程 llama.cpp 列表没有当前平台可用项，保留本地列表")
+            return
         self._list = llamacpp_list
         self.changed.emit(llamacpp_list)
 
@@ -80,34 +115,55 @@ class LlamacppList(QObject):
 LLAMACPP_LIST = LlamacppList()
 
 
+def _replace_path(src_path: str, dst_path: str):
+    if os.path.exists(dst_path):
+        if os.path.isdir(dst_path) and not os.path.islink(dst_path):
+            shutil.rmtree(dst_path)
+        else:
+            os.remove(dst_path)
+    shutil.move(src_path, dst_path)
+
+
+def _flatten_llamacpp_bin_folder(llama_folder: str):
+    bin_folder = os.path.join(llama_folder, "build", "bin")
+    if os.path.isdir(bin_folder):
+        for item in os.listdir(bin_folder):
+            _replace_path(
+                os.path.join(bin_folder, item),
+                os.path.join(llama_folder, item),
+            )
+        shutil.rmtree(os.path.join(llama_folder, "build"))
+
+
+def _make_linux_binaries_executable(llama_folder: str):
+    if sys.platform == "win32":
+        return
+    for filename in ("llama-server", "llama-batched-bench"):
+        path = os.path.join(llama_folder, filename)
+        if os.path.isfile(path):
+            os.chmod(path, 0o755)
+
+
 def unzip_llamacpp(folder: str, filename: str):
     llama_folder = os.path.join(folder, "llama")
     file_path = os.path.join(folder, filename)
     print(f"将解压 {filename} 到 {llama_folder}")
 
-    if not os.path.exists(llama_folder):
-        os.mkdir(llama_folder)
+    os.makedirs(llama_folder, exist_ok=True)
 
     # 解压，如果文件已存在则覆盖
     if filename.endswith(".zip"):
         with zipfile.ZipFile(file_path, "r") as zip_ref:
             zip_ref.extractall(llama_folder)
-        # macOS build 中解压后产生的是'llama/build/bin'文件夹，需要将其中的所有内容移动到llama文件夹下
-        if sys.platform == "darwin":
-            bin_folder = os.path.join(llama_folder, "build", "bin")
-            for item in os.listdir(bin_folder):
-                src_path = os.path.join(bin_folder, item)
-                dst_path = os.path.join(llama_folder, item)
-                os.rename(src_path, dst_path)
-                # 添加执行权限 (755 = rwxr-xr-x)
-                os.chmod(dst_path, 0o755)
-            # 删除空文件夹
-            import shutil
-            shutil.rmtree(os.path.join(llama_folder, "build"))
+    elif filename.endswith(".tar.gz") or filename.endswith(".tgz"):
+        with tarfile.open(file_path, "r:gz") as tar_ref:
+            tar_ref.extractall(llama_folder)
     else:
         print(f"不支持的文件格式: {filename}")
         return
 
+    _flatten_llamacpp_bin_folder(llama_folder)
+    _make_linux_binaries_executable(llama_folder)
     print(f"{filename} 已成功解压到 {llama_folder}")
 
 

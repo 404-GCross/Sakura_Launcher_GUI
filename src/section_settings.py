@@ -9,7 +9,7 @@ from qfluentwidgets import (
 )
 import requests
 
-from .common import SAKURA_LAUNCHER_GUI_VERSION
+from .common import LOG_FILE, SAKURA_LAUNCHER_GUI_VERSION
 from .setting import SETTING
 from .ui import *
 
@@ -264,17 +264,24 @@ class SettingsSection(QFrame):
 
     def _create_log_section(self):
         logger = logging.getLogger()
-        logger.addHandler(self.handler)
+        if self.handler not in logger.handlers:
+            logger.addHandler(self.handler)
         logger.setLevel(logging.INFO)
 
         log_display = TextEdit()
         log_display.setReadOnly(True)
+        try:
+            with open(LOG_FILE, "r", encoding="utf-8") as f:
+                log_display.setPlainText("".join(f.readlines()[-500:]))
+                log_display.ensureCursorVisible()
+        except FileNotFoundError:
+            pass
 
         def append_log(msg):
             log_display.append(msg)
             log_display.ensureCursorVisible()
 
-        self.handler.emitter.sig.connect(append_log, Qt.UniqueConnection)
+        self.handler.emitter.sig.connect(append_log)
         self.handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
 
         def clear_log():

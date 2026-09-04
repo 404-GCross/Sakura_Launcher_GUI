@@ -3,6 +3,7 @@ import sys
 import os
 import subprocess
 import shutil
+import shlex
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QAbstractScrollArea
 from PySide6.QtGui import QIcon, QColor, QFont
@@ -27,7 +28,19 @@ from src.section_settings import SettingsSection
 from src.setting import *
 from src.ui import *
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO").upper())
+log_handlers = [logging.StreamHandler()]
+try:
+    log_handlers.append(logging.FileHandler(LOG_FILE, encoding="utf-8"))
+except OSError as e:
+    print(f"无法创建日志文件 {LOG_FILE}: {e}")
+
+logging.basicConfig(
+    level=os.environ.get("LOGLEVEL", "INFO").upper(),
+    format="[%(levelname)s] %(message)s",
+    handlers=log_handlers,
+)
+logging.info(f"数据目录: {CURRENT_DIR}")
+logging.info(f"日志文件: {LOG_FILE}")
 
 # 设置CUDA设备顺序，保证nvidia-smi的输出顺序和llama.cpp的输出顺序一致
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -261,8 +274,10 @@ class MainWindow(MSFluentWindow):
             MessageBox("错误", f"llamacpp路径不存在: {llamacpp_path}", self).exec()
             return
 
-        model_name = section.model_path.currentText().split(os.sep)[-1]
         model_path = section.model_path.currentText()
+        if model_path and not os.path.isabs(model_path):
+            model_path = os.path.abspath(os.path.join(CURRENT_DIR, model_path))
+        model_name = os.path.basename(model_path)
         logging.info(f"模型路径: {model_path}")
         logging.info(f"模型名称: {model_name}")
 
@@ -329,7 +344,7 @@ class MainWindow(MSFluentWindow):
 
         if section.flash_attention_check.isChecked():
             option_extra.append("-fa")
-            if version >= 6325:     # https://github.com/ggml-org/llama.cpp/releases/tag/b6325
+            if version is not None and version >= 6325:     # https://github.com/ggml-org/llama.cpp/releases/tag/b6325
                 option_extra.append("on")
         if section.no_mmap_check.isChecked():
             option_extra.append("--no-mmap")
@@ -363,7 +378,7 @@ class MainWindow(MSFluentWindow):
             MessageBox("错误", f"设置GPU环境变量时出错: {str(e)}", self).exec()
             return
 
-        command_plain = " ".join(command)
+        command_plain = shlex.join(command)
         logging.info(f"执行命令: {command_plain}")
 
         # 在运行命令的部分
@@ -371,13 +386,12 @@ class MainWindow(MSFluentWindow):
             command_prefix = ["start", "cmd", "/K"]
             subprocess.Popen(command_prefix + command, env=env, shell=True)
         elif sys.platform == "darwin":
-            cmd_str = " ".join(command)
             # 使用 osascript 执行命令，要先进入正确目录
             apple_script = [
                 'osascript',
                 '-e',
                 f'''tell application "Terminal"
-                    do script "cd {CURRENT_DIR} && {cmd_str}"
+                    do script "cd {shlex.quote(CURRENT_DIR)} && {command_plain}"
                 end tell'''
             ]
             subprocess.Popen(apple_script, env=env)
@@ -388,10 +402,11 @@ class MainWindow(MSFluentWindow):
                 logging.info(f"请手动运行以下命令：\n{command_plain}")
                 return
             if terminal == "gnome-terminal":
-                command_prefix = [terminal, "--", "bash", "-c"]
+                command_prefix = [terminal, "--", "bash", "-lc", command_plain]
+                subprocess.Popen(command_prefix, env=env, cwd=CURRENT_DIR)
             else:
                 command_prefix = [terminal, "-e"]
-            subprocess.Popen(command_prefix + command, env=env)
+                subprocess.Popen(command_prefix + command, env=env, cwd=CURRENT_DIR)
 
         logging.info("命令已在新的终端窗口中启动。")
 
