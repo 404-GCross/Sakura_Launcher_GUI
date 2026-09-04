@@ -6,7 +6,9 @@
             "version": "b6178-CUDA",
             "gpu": "Nvidia独显",
             "require_cuda": true,
-            "platforms": ["windows"]
+            "platforms": [
+                "windows"
+            ]
         },
         {
             "repo": "ggml-org/llama.cpp/releases/download/b6178",
@@ -14,7 +16,9 @@
             "version": "b6178-HIP",
             "gpu": "大部分AMD独显",
             "require_cuda": false,
-            "platforms": ["windows"]
+            "platforms": [
+                "windows"
+            ]
         },
         {
             "repo": "ggml-org/llama.cpp/releases/download/b6178",
@@ -22,23 +26,99 @@
             "version": "b6178-Apple-M",
             "gpu": "苹果电脑M系列核显",
             "require_cuda": false,
-            "platforms": ["macos"]
+            "platforms": [
+                "macos"
+            ]
         },
         {
-            "repo": "ggml-org/llama.cpp/releases/download/b6178",
-            "filename": "llama-b6178-bin-ubuntu-x64.zip",
-            "version": "b6178-Linux-CPU",
-            "gpu": "Linux x64 CPU",
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-x64.tar.gz",
+            "version": "b10795-Linux-CPU-x64",
+            "gpu": "Ubuntu x64 CPU",
             "require_cuda": false,
-            "platforms": ["linux"]
+            "platforms": [
+                "linux"
+            ]
         },
         {
-            "repo": "ggml-org/llama.cpp/releases/download/b6178",
-            "filename": "llama-b6178-bin-ubuntu-vulkan-x64.zip",
-            "version": "b6178-Linux-Vulkan",
-            "gpu": "Linux x64 通用GPU（Vulkan）",
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-arm64.tar.gz",
+            "version": "b10795-Linux-CPU-arm64",
+            "gpu": "Ubuntu arm64 CPU",
             "require_cuda": false,
-            "platforms": ["linux"]
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-s390x.tar.gz",
+            "version": "b10795-Linux-CPU-s390x",
+            "gpu": "Ubuntu s390x CPU",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-vulkan-x64.tar.gz",
+            "version": "b10795-Linux-Vulkan-x64",
+            "gpu": "Ubuntu x64 Vulkan",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-vulkan-arm64.tar.gz",
+            "version": "b10795-Linux-Vulkan-arm64",
+            "gpu": "Ubuntu arm64 Vulkan",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-rocm-10.0-x64.tar.gz",
+            "version": "b10795-Linux-ROCm-10.0-x64",
+            "gpu": "Ubuntu x64 ROCm 10.0",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-openvino-2026.3.1-x64.tar.gz",
+            "version": "b10795-Linux-OpenVINO-x64",
+            "gpu": "Ubuntu x64 OpenVINO 2026.3.1",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-sycl-fp32-x64.tar.gz",
+            "version": "b10795-Linux-SYCL-FP32-x64",
+            "gpu": "Ubuntu x64 SYCL FP32",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
+        },
+        {
+            "repo": "ggml-org/llama.cpp/releases/download/b10795",
+            "filename": "llama-b10795-bin-ubuntu-sycl-fp16-x64.tar.gz",
+            "version": "b10795-Linux-SYCL-FP16-x64",
+            "gpu": "Ubuntu x64 SYCL FP16",
+            "require_cuda": false,
+            "platforms": [
+                "linux"
+            ]
         },
         {
             "repo": "PiDanShouRouZhouXD/Sakura_Launcher_GUI/releases/download/v0.0.3-alpha",
@@ -46,7 +126,9 @@
             "version": "b3534-ROCm-780m",
             "gpu": "部分AMD核显（不推荐）",
             "require_cuda": false,
-            "platforms": ["windows"]
+            "platforms": [
+                "windows"
+            ]
         },
         {
             "repo": "ggml-org/llama.cpp/releases/download/b6178",
@@ -54,7 +136,9 @@
             "version": "b6178-Vulkan",
             "gpu": "通用（不推荐）",
             "require_cuda": false,
-            "platforms": ["windows"]
+            "platforms": [
+                "windows"
+            ]
         }
     ],
     "sakura": [
